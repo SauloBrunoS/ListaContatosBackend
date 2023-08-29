@@ -18,8 +18,8 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script setup lang = "ts">
+import { ref, defineEmits } from 'vue';
 import apiClient from '@/api';
 
 const novoContato = ref({
@@ -29,7 +29,9 @@ const novoContato = ref({
   status: 'ativo',
 });
 
-const emit = defineEmits(['adicionar']);
+const emit = defineEmits<{
+  (e: 'adicionar', data:any): void
+}>()
 
 const adicionarContato = async () => {
   try {

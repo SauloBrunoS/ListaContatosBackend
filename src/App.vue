@@ -5,13 +5,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import ContatoList from './components/ListarContatos.vue';
 import NovoContato from './components/AdicionarContato.vue';
 import apiClient from '@/api';
+import {Contact} from '@/types'
 
-const contatos = ref([]);
+const contatos = ref<Contact[]>([]);
 
 const carregarContatos = async () => {
   try {
@@ -22,11 +23,16 @@ const carregarContatos = async () => {
   }
 };
 
-const adicionarContato = (novoContato) => {
+const adicionarContato = (novoContato : Contact) => {
   contatos.value.push(novoContato);
 };
 
-const excluirContato = (id) => {
+const alterarContato = (id: number) => {
+  contatos.value = contatos.value.filter((contato) => contato.id !== id);
+};
+
+
+const excluirContato = (id: number) => {
   contatos.value = contatos.value.filter((contato) => contato.id !== id);
 };
 

@@ -4,6 +4,7 @@
     <ul>
       <li v-for="contato in contatos" :key="contato.id">
         {{ formatoContato(contato) }}
+        <button @click="alterarContato(contato)">Alterar</button>
         <button @click="excluirContato(contato.id)">Excluir</button>
       </li>
     </ul>
@@ -13,14 +14,7 @@
 <script setup lang = "ts">
 import { defineProps, defineEmits } from 'vue';
 import apiClient from '@/api';
-
-type Contact = {
-  id: number;
-  nome: string;
-  telefone: string;
-  endereco: string;
-  status: boolean;
-};
+import {Contact} from '../types'
 
 const props = defineProps<{
   contatos: Contact[];
@@ -35,6 +29,16 @@ const excluirContato = async (id: number) => {
     console.log(`Contato com o ID ${id} excluído`);
   } catch (error) {
     console.error('Erro ao excluir contato:', error);
+  }
+};
+
+const alterarContato = async (id: number, novosDados: Contact) => {
+  try {
+    await apiClient.put(`/contatos/${id}`, novosDados);
+    emit('alterar', id);
+    console.log(`Contato com o ID ${id} alterado`);
+  } catch (error) {
+    console.error('Erro ao alterar contato:', error);
   }
 };
 

@@ -3,15 +3,15 @@
     <h2>Novo Contato</h2>
     <form @submit.prevent="adicionarContato">
       <label for="nome">Nome:</label>
-      <input v-model="novoContato.nome" required />
+      <input v-model="novoContato.nomeContato" required />
       <label for="telefone">Telefone:</label>
       <input v-model="novoContato.telefone" required />
       <label for="endereco">Endereço:</label>
       <input v-model="novoContato.endereco" />
       <label for="status">Status:</label>
       <select v-model="novoContato.status" required>
-        <option value="ativo">Ativo</option>
-        <option value="inativo">Inativo</option>
+        <option value="Ativo">Ativo</option>
+        <option value="Inativo">Inativo</option>
       </select>
       <button type="submit">Adicionar Contato</button>
     </form>
@@ -19,15 +19,29 @@
 </template>
 
 <script setup lang = "ts">
-import { ref, defineEmits } from 'vue';
+import { ref, defineEmits, defineProps, watch } from 'vue';
 import apiClient from '@/api';
+import {Contact, ContatoParaEditar} from '../types'
+
+const props = defineProps<{
+  contatoParaEditar: ContatoParaEditar;
+}>()
+
 
 const novoContato = ref({
-  nome: '',
+  nomeContato: '',
   telefone: '',
   endereco: '',
-  status: 'ativo',
+  status: '',
 });
+
+watch(props.contatoParaEditar, (antigoValor, novoValor) => {
+  novoContato.value.nomeContato = novoValor.nomeContato;
+  novoContato.value.telefone = novoValor.telefone;
+  novoContato.value.endereco = novoValor.endereco;
+  novoContato.value.status = novoValor.status;
+});
+
 
 const emit = defineEmits<{
   (e: 'adicionar', data:any): void
@@ -36,13 +50,15 @@ const emit = defineEmits<{
 const adicionarContato = async () => {
   try {
     const response = await apiClient.post('/contatos', novoContato.value);
-    emit('adicionar', response.data);
-    novoContato.value = {
-      nome: '',
-      telefone: '',
-      endereco: '',
-      status: 'ativo',
+    if(response){
+      emit('adicionar', response.data);
+      novoContato.value = {
+        nomeContato: '',
+        telefone: '',
+        endereco: '',
+        status: '',
     };
+  }
     console.log('Contato adicionado com sucesso');
 
   } catch (error) {

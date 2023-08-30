@@ -1,7 +1,7 @@
 <template>
   <div>
-    <ContatoList :contatos="contatos" @excluir="excluirContato"></ContatoList>
-    <NovoContato @adicionar="adicionarContato"></NovoContato>
+    <ContatoList :contatos="contatos" @excluir="excluirContato" @alterar = "alterarContato"></ContatoList>
+    <NovoContato :contatoParaEditar = "contatoParaEditar" @adicionar="adicionarContato"></NovoContato>
   </div>
 </template>
 
@@ -10,30 +10,38 @@ import { ref, onMounted } from 'vue';
 import ContatoList from './components/ListarContatos.vue';
 import NovoContato from './components/AdicionarContato.vue';
 import apiClient from '@/api';
-import {Contact} from '@/types'
+import {Contact, ContatoParaEditar} from '@/types'
 
 const contatos = ref<Contact[]>([]);
+const contatoParaEditar = ref<ContatoParaEditar>({
+  nomeContato: '',
+  telefone: '',
+  endereco: '',
+  status: '',
+});
 
 const carregarContatos = async () => {
   try {
     const response = await apiClient.get('/contatos');
-    contatos.value = response.data;
-  } catch (error) {
+    contatos.value = response.data._embedded.contatos  } catch (error) {
     console.error('Erro ao carregar contatos:', error);
-  }
+    }
 };
 
 const adicionarContato = (novoContato : Contact) => {
   contatos.value.push(novoContato);
 };
 
-const alterarContato = (id: number) => {
-  contatos.value = contatos.value.filter((contato) => contato.id !== id);
+const alterarContato = (dados:Contact) => {
+  contatoParaEditar.value.nomeContato = dados.nomeContato;
+  contatoParaEditar.value.telefone = dados.telefone;
+  contatoParaEditar.value.endereco = dados.endereco;
+  contatoParaEditar.value.nomeContato = dados.nomeContato;
+
 };
 
-
-const excluirContato = (id: number) => {
-  contatos.value = contatos.value.filter((contato) => contato.id !== id);
+const excluirContato = (id: string) => {
+  contatos.value = contatos.value.filter((contato) => contato.idContato !== id);
 };
 
 onMounted(carregarContatos);

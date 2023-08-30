@@ -1,7 +1,13 @@
 export type Contact = {
-    id: number;
-    nome: string;
+    idContato: string;
+    nomeContato: string;
     telefone: string;
     endereco: string;
-    status: boolean;
+    status: string;
+  };
+export type ContatoParaEditar = {
+    nomeContato: string;
+    telefone: string;
+    endereco: string;
+    status: string;
   };
